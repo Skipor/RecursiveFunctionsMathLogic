@@ -10,11 +10,13 @@
 #include <vector>
 #include <assert.h>
 #import <stack>
+#import <cmath>
 
 
 using namespace std;
 typedef long long nat;
 typedef std::vector<nat> arguments;
+double eps = 0.0000000000001;
 
 
 
@@ -94,7 +96,9 @@ struct R {
     static_assert(F::arg_num + 2 == G::arg_num, "invalid template parametrs");
 
     static nat apply(arguments const & args) {
+//        cout <<  "args "  << args.size() << ' ' << arg_num << endl;
         assert(args.size() == arg_num);
+
         nat y = args[arg_num - 1];
         arguments g_args(args.begin(), --args.end());
         nat acc = F::apply(g_args);
@@ -150,7 +154,116 @@ arguments args{ x... };
 cout << G::apply(args) << endl;
 }
 
-typedef S< R<Z,U<3,2> >, U<1,1>, U<1,1> >  DEC;
+
+
+template <int argNum>
+struct Base {
+public:
+    static const nat arg_num = argNum;
+
+
+};
+
+struct PLOG : Base<2> {
+
+    static nat apply(arguments const & args) {
+        assert(args.size() == arg_num);
+
+        nat x = args[1];
+        nat p = args[0];
+        nat couter = 0;
+        while (!(x % p)) {
+            x /= p;
+            couter ++;
+        }
+        return couter;
+
+    }
+
+};
+
+struct DIV : Base<2> {
+
+    static nat apply(arguments const & args) {
+        assert(args.size() == arg_num);
+
+        nat y = args[1];
+        nat x = args[0];
+
+        return x / y;
+
+    }
+
+};
+
+struct PLUS : Base<2> {
+
+    static nat apply(arguments const & args) {
+        assert(args.size() == arg_num);
+        nat y = args[1];
+        nat x = args[0];
+
+        return x + y;
+
+    }
+
+};
+
+struct TIMES : Base<2> {
+
+    static nat apply(arguments const & args) {
+        assert(args.size() == arg_num);
+        nat y = args[1];
+        nat x = args[0];
+
+        return x * y;
+
+    }
+
+};
+
+struct MOD : Base<2> {
+
+    static nat apply(arguments const & args) {
+        assert(args.size() == arg_num);
+        nat y = args[1];
+        nat x = args[0];
+
+        return x % y;
+
+    }
+
+};
+
+struct MINUS : Base<2> {
+
+    static nat apply(arguments const & args) {
+        assert(args.size() == arg_num);
+        nat y = args[1];
+        nat x = args[0];
+
+        return x - y < 0 ? 0: x -y;
+
+    }
+
+};
+
+struct DEC : Base<1> {
+
+    static nat apply(arguments const & args) {
+        assert(args.size() == arg_num);
+        nat x = args[0];
+
+        return x ? x - 1: 0;
+
+    }
+
+};
+
+
+
+
+//typedef S< R<Z,U<3,2> >, U<1,1>, U<1,1> >  DEC;
 typedef N INC;
 typedef S< N, Z > TRUE;
 typedef TRUE ONE;
@@ -165,13 +278,13 @@ typedef S<INC, INC> PLUS_TWO;
 typedef S<INC, ONE> TWO;
 typedef S<INC, TWO> THREE;
 typedef S<INC, S<INC, THREE> > FIVE;
-typedef R< U<1,1>, S<INC, U<3, 3> > > PLUS; //O(x_2)
-typedef R< U<1,1>, S<DEC, U<3, 3> > > MINUS;
-typedef R< Z, S< PLUS, U<3, 3>, U<3, 1> > > TIMES; // O((x_2)^2)
+//typedef R< U<1,1>, S<INC, U<3, 3> > > PLUS; //O(x_2)
+//typedef R< U<1,1>, S<DEC, U<3, 3> > > MINUS;
+//typedef R< Z, S< PLUS, U<3, 3>, U<3, 1> > > TIMES; // O((x_2)^2)
 typedef R< TRUE, S< TIMES, U<3, 3>, U<3, 1> > > POW;
-typedef S< DEC, S< M< S<MINUS, U<3,1>, S<TIMES,  U<3, 2>, U<3, 3> > > >, S<INC, U<2, 1> >, U<2, 2> > > DIV; //DIV(0,0) undefined
+//typedef S< DEC, S< M< S<MINUS, U<3,1>, S<TIMES,  U<3, 2>, U<3, 3> > > >, S<INC, U<2, 1> >, U<2, 2> > > DIV; //DIV(0,0) undefined
 //typedef S< M< S<MINUS, U<3,1>, S<TIMES,  U<3, 2>, U<3, 3> > > >, S<MINUS, U<2, 1>, S<DEC, U<2,2> > >, U<2, 2> > DIV; // DIV(0,0) = 0
-typedef S<MINUS, U<2,1>, S<TIMES, U<2,2>, DIV > > MOD;
+//typedef S<MINUS, U<2,1>, S<TIMES, U<2,2>, DIV > > MOD;
 
 typedef S<IS_NOT_ZERO, TIMES> AND;
 typedef S<IS_NOT_ZERO, PLUS> OR;
@@ -195,7 +308,11 @@ typedef S<S<DEC, MINUS>, U<1, 1>, M <S<NOT, S < IS_PRIME, S<DEC, MINUS> > > > > 
 typedef S<R<TWO, S< NEXT_PRIME, U<3, 3> > >, U<1, 1>, U<1,1> > NTH_PRIME;
 
 //typedef S < M< S< MORE, U<2,1>, S<PRIMES_BEFORE, U<2,2> > > >, INC>  NTH_PRIME; // O(N^+100500) :((((
-typedef  S< DEC, M<S< DIVISIBLE, U<3,2>, S<POW, U<3,1>, U<3,3> > > > >   PLOG;
+//typedef  S< DEC, M<S< DIVISIBLE, U<3,2>, S<POW, U<3,1>, U<3,3> > > > >   PLOG;
+
+
+
+
 
 
 //template <typename Condition, typename Then , typename Else>
@@ -209,14 +326,33 @@ typedef  S< NTH_PRIME, STACK_SIZE > TOP_STACK_PRIME; //
 typedef S<DIV, U<1, 1>, TWO> DEC_SIZE;
 typedef S<TIMES, U<1,1>, TWO> INC_SIZE;
 ////typedef  S< PREV_PRIME, S< NTH_PRIME, STACK_SIZE> > TOP_STACK_PRIME; // infinite loop on empty stack
-typedef S< DEC_SIZE, S< DIV, U<1, 1>, TOP_STACK_PRIME > > POP;
 typedef S< PLOG,  TOP_STACK_PRIME, U<1, 1> >  ULT; //head, peek, last, ultimate
 typedef S< PLOG,  S<PREV_PRIME, TOP_STACK_PRIME>, U<1,1> > PENULT; // before head, penultimame
+typedef S< DEC_SIZE, S< DIV, U<1, 1>, S< POW, TOP_STACK_PRIME, ULT >  > > POP;
 typedef S < S<TIMES, U<2, 1>, S<POW, S< TOP_STACK_PRIME, U<2, 1> > , U<2, 2> > >, S< INC_SIZE, U<2, 1> >, U<2, 2> > PUSH;
-typedef S<NOT_DIVISIBLE, U<1,1>, FIVE> ONLY_VALUE_OR_EMPTY;
+//typedef S<NOT_DIVISIBLE, U<1,1>, FIVE> READY;
+typedef S<EQUAL, STACK_SIZE, ONE> READY;
+typedef S<MORE, STACK_SIZE, ONE> NOT_READY;
 typedef ONE EMPTY_STACK;
 
 typedef S<PUSH, S<POP, POP>, S<INC, ULT>>ACKERMANN_FIRST;
+typedef S<PUSH, S<PUSH, S<POP, POP>, S<DEC, PENULT> >, ONE> ACKERMANN_SECOND;
+typedef S<PUSH, S<PUSH, S<PUSH, S<POP, POP>, S<DEC, PENULT> > , PENULT > , S<DEC, ULT>  > ACKERMANN_THIRD;
+
+
+typedef S<NOT, PENULT> FIRST_CASE;
+typedef S<NOT, ULT> SECOND_CASE;
+
+typedef S< S < R< ACKERMANN_SECOND, S<ACKERMANN_THIRD, U<3, 1> > >, U<1, 1> , S<NOT, SECOND_CASE> > , U<3, 1> > ACKERMANN_NOT_FIRST;
+//typedef /*S< */S < R< U<1,1>,  U<3, 1>  > ,U<1, 1> > /*, U<3, 1> >*/ ACKERMANN_NOT_FIRST;
+
+typedef S< R < ACKERMANN_FIRST , ACKERMANN_NOT_FIRST >, U<1, 1>, S<NOT ,FIRST_CASE> > ACKERMANN_ITER;
+
+typedef S<PUSH, S <S< PUSH, EMPTY_STACK, U<1, 1> >, U< 2, 1> >, U< 2, 2> > STACK_FROM_PAIR;
+typedef R< U<1, 1>, S <ACKERMANN_ITER, U<3, 3> > > N_ACKERMANN_ITERS;
+
+typedef M< S < NOT_READY,  N_ACKERMANN_ITERS > > ITERATIONS;
+typedef S< ULT ,  S <S <N_ACKERMANN_ITERS, U<1, 1>, ITERATIONS>, STACK_FROM_PAIR > > ACKERMANN;
 
 
 
@@ -257,39 +393,71 @@ int main() {
 //    print<EQUAL>(5, 4);
 
     cout << "X PLOG(2,X)" << endl;
-//    print<TOP_STACK_PRIME>(1);
-    nat stack = S<PUSH, S<PUSH, S<PUSH, EMPTY_STACK, THREE>, ZERO>, ONE >::apl((0ll));
-//    nat stack =S<PUSH, EMPTY_STACK, THREE>::apl((0ll));
+//    print<STACK_FROM_PAIR>(0, 0);
+
+
+    nat stack = N_ACKERMANN_ITERS::apl(STACK_FROM_PAIR::apl(3, 2), 118);
     cout << stack << endl;
-    print<STACK_SIZE>(stack);
-//    print < ULT > (stack);
-    print < PENULT > (stack);
-//    stack = POP::apl(stack);
+    print<READY>(stack);
+
+    stack = STACK_FROM_PAIR::apl(2, 2);
+    cout << stack << endl;
+     stack = ACKERMANN_ITER::apl(stack);
+    cout << stack << endl;
+
+
+    print<ITERATIONS>(STACK_FROM_PAIR::apl(3,1));
+    print<ACKERMANN>(3, 2);
+//    print<PLOG>(2, 64 * 33 * 3 * 5);
+//    print<PLOG> (3, 64);
+//    print<S< DIV, U<1, 1>, TOP_STACK_PRIME >>(108);
+////    print<TOP_STACK_PRIME>(1);
+//    nat stack = S<PUSH, S<PUSH, S<PUSH, EMPTY_STACK, THREE>, ZERO>, ONE >::apl((0ll));
+////    nat stack =S<PUSH, EMPTY_STACK, THREE>::apl((0ll));
 //    cout << stack << endl;
+//    print<STACK_SIZE>(stack);
 //    print < ULT > (stack);
 //    print < PENULT > (stack);
+////    cout << "pop" << endl;
+////    stack = POP::apl(stack);
+////    cout << stack << endl;
+////    cout << "pop" << endl;
+////    stack = POP::apl(stack);
+////    cout << stack << endl;
+////    print < ULT > (stack);
+////    print < PENULT > (stack);
 //    cout << "ackerman" << endl;
-//    stack = ACKERMANN_FIRST::apl(stack);
+////    stack = ACKERMANN_THIRD::apl(stack);
+//    cout << ACKERMANN_FIRST::apl(stack) << endl;
+//    stack = ACKERMANN_ITER::apl(stack);
+////    stack = S < R< U<1, 1>,  U<3, 1>  > ,U<1, 1> >::apl(stack);
 //    cout << stack << endl;
+//    print<STACK_SIZE>(stack);
 //    print < ULT > (stack);
 //    print < PENULT > (stack);
-
-
-//    print<S<PREV_PRIME, TWO> >(0);
-//    for(nat i = 0; i < 65; i++) {
-//        cout << i <<' ';
-////        print<NEXT_PRIME>(i);
-//        print<NTH_PRIME>(i);
+//    cout << "pop" << endl;
+//        stack = POP::apl(stack);
+//    cout << stack << endl;
+//    print<STACK_SIZE>(stack);
+//    print < ULT > (stack);
+//    print < PENULT > (stack);
 //
-////        print<PLOG>(2, i);
-//    }
-//    cout << "X  NTH_PRIME(X)" << endl;
 //
-//    for(nat i = 0; i < 15; i++) {
-//        cout << i <<' ';
+////    print<S<PREV_PRIME, TWO> >(0);
+////    for(nat i = 0; i < 65; i++) {
+////        cout << i <<' ';
+//////        print<NEXT_PRIME>(i);
 ////        print<NTH_PRIME>(i);
-//        print<PLOG>(2, i);
-//    }
+////
+//////        print<PLOG>(2, i);
+////    }
+////    cout << "X  NTH_PRIME(X)" << endl;
+////
+////    for(nat i = 0; i < 15; i++) {
+////        cout << i <<' ';
+//////        print<NTH_PRIME>(i);
+////        print<PLOG>(2, i);
+////    }
     return 0;
 }
 
