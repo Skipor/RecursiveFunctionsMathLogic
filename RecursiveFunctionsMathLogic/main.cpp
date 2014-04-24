@@ -9,14 +9,18 @@
 #include <iostream>
 #include <vector>
 #include <assert.h>
+#import <stack>
 
 
 using namespace std;
-typedef unsigned nat;
+typedef long long nat;
 typedef std::vector<nat> arguments;
 
 
+
+
 struct Z {
+
 
     static const nat arg_num = 1;
     static nat apply(arguments const & args) {
@@ -159,6 +163,7 @@ typedef S<NOT, NOT> IS_NOT_ZERO;
 typedef S<INC, INC> PLUS_TWO;
 
 typedef S<INC, ONE> TWO;
+typedef S<INC, TWO> THREE;
 typedef R< U<1,1>, S<INC, U<3, 3> > > PLUS; //O(x_2)
 typedef R< U<1,1>, S<DEC, U<3, 3> > > MINUS;
 typedef R< Z, S< PLUS, U<3, 3>, U<3, 1> > > TIMES; // O((x_2)^2)
@@ -184,8 +189,32 @@ U<1,1>, S<DEC, S<DIV, U<1,1>, TWO > >
 >  IS_PRIME;
 typedef S< R<ZERO, S<PLUS, S<IS_PRIME, U<3,2> >, U<3,3> > >, U<1,1>, S<INC, U<1,1> > > PRIMES_BEFORE;
 
-typedef S < M< S< MORE, U<2,1>, S<PRIMES_BEFORE, U<2,2> > > >, INC>  NTH_PRIME; // O(N^+100500) :((((
+typedef S<S<INC, PLUS>, U<1, 1>, M <S<NOT, S < IS_PRIME, S<INC, PLUS> > > > > NEXT_PRIME;
+typedef S<S<DEC, MINUS>, U<1, 1>, M <S<NOT, S < IS_PRIME, S<DEC, MINUS> > > > > PREV_PRIME;
+typedef S<R<TWO, S< NEXT_PRIME, U<3, 3> > >, U<1, 1>, U<1,1> > NTH_PRIME;
+
+//typedef S < M< S< MORE, U<2,1>, S<PRIMES_BEFORE, U<2,2> > > >, INC>  NTH_PRIME; // O(N^+100500) :((((
 typedef  S< DEC, M<S< DIVISIBLE, U<3,2>, S<POW, U<3,1>, U<3,3> > > > >   PLOG;
+
+
+//template <typename Condition, typename Then , typename Else>
+//struct IF : S < R< Then, Else>, U<n, 1>, U<n, 2> ..., S<NOT, Condition> > this if is not lasy - then branch always counting
+// Else n + 2 arguments, where args'[n + 1] = 1, args'[n + 2] = Then(args)
+// Else = S<CorrectElse, U<n + 2, 1>, U<n + 2, 2> ... U<n + 2, n> >
+
+
+typedef M<S<DIVISIBLE, U<2, 1> ,S< NTH_PRIME, U<2, 2> > > > STACK_SIZE;
+//typedef  S< NTH_PRIME,  S<DEC, STACK_SIZE> > TOP_STACK_PRIME; // wrong answer on empty stack
+typedef  S< PREV_PRIME, S< NTH_PRIME, STACK_SIZE> > TOP_STACK_PRIME; // infinite loop on empty stack
+typedef S< DIV, U<1, 1>, TOP_STACK_PRIME  > POP;
+typedef S< PLOG,  TOP_STACK_PRIME, U<1, 1> >  ULT; //head, peek, last, ultimate
+typedef S< PLOG,  S<PREV_PRIME, TOP_STACK_PRIME>, U<1,1> > PENULT; // before head, penultimame
+typedef S<TIMES, U<2, 1>, S<POW, S< NTH_PRIME, S< STACK_SIZE, U<2, 1> > >, U<2, 2> > > PUSH;
+typedef S<NOT_DIVISIBLE, U<1,1>, THREE> ONLY_VALUE_OR_EMPTY;
+typedef ONE EMPTY_STACK;
+
+typedef S<PUSH, S<POP, POP>, S<INC, ULT>>ACKERMANN_FIRST;
+
 
 
 
@@ -225,18 +254,38 @@ int main() {
 //    print<EQUAL>(5, 4);
 
     cout << "X PLOG(2,X)" << endl;
-    for(nat i = 1; i < 65; i++) {
-        cout << i <<' ';
-//        print<NTH_PRIME>(i);
-        print<PLOG>(2, i);
-    }
-    cout << "X  NTH_PRIME(X)" << endl;
+//    print<TOP_STACK_PRIME>(1);
+    nat stack = S<PUSH, S<PUSH, S<PUSH, EMPTY_STACK, THREE>, ZERO>, ONE >::apl((0ll));
+//    nat stack =S<PUSH, EMPTY_STACK, THREE>::apl((0ll));
+    cout << stack << endl;
+    print < ULT > (stack);
+    print < PENULT > (stack);
+//    stack = POP::apl(stack);
+//    cout << stack << endl;
+//    print < ULT > (stack);
+//    print < PENULT > (stack);
+    cout << "ackerman" << endl;
+    stack = ACKERMANN_FIRST::apl(stack);
+    cout << stack << endl;
+    print < ULT > (stack);
+    print < PENULT > (stack);
 
-    for(nat i = 0; i < 15; i++) {
-        cout << i <<' ';
-        print<NTH_PRIME>(i);
+
+//    print<S<PREV_PRIME, TWO> >(0);
+//    for(nat i = 0; i < 65; i++) {
+//        cout << i <<' ';
+////        print<NEXT_PRIME>(i);
+//        print<NTH_PRIME>(i);
+//
+////        print<PLOG>(2, i);
+//    }
+//    cout << "X  NTH_PRIME(X)" << endl;
+//
+//    for(nat i = 0; i < 15; i++) {
+//        cout << i <<' ';
+////        print<NTH_PRIME>(i);
 //        print<PLOG>(2, i);
-    }
+//    }
     return 0;
 }
 
