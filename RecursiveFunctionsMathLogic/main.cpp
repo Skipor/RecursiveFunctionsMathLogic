@@ -164,6 +164,7 @@ typedef S<INC, INC> PLUS_TWO;
 
 typedef S<INC, ONE> TWO;
 typedef S<INC, TWO> THREE;
+typedef S<INC, S<INC, THREE> > FIVE;
 typedef R< U<1,1>, S<INC, U<3, 3> > > PLUS; //O(x_2)
 typedef R< U<1,1>, S<DEC, U<3, 3> > > MINUS;
 typedef R< Z, S< PLUS, U<3, 3>, U<3, 1> > > TIMES; // O((x_2)^2)
@@ -203,14 +204,16 @@ typedef  S< DEC, M<S< DIVISIBLE, U<3,2>, S<POW, U<3,1>, U<3,3> > > > >   PLOG;
 // Else = S<CorrectElse, U<n + 2, 1>, U<n + 2, 2> ... U<n + 2, n> >
 
 
-typedef M<S<DIVISIBLE, U<2, 1> ,S< NTH_PRIME, U<2, 2> > > > STACK_SIZE;
-//typedef  S< NTH_PRIME,  S<DEC, STACK_SIZE> > TOP_STACK_PRIME; // wrong answer on empty stack
-typedef  S< PREV_PRIME, S< NTH_PRIME, STACK_SIZE> > TOP_STACK_PRIME; // infinite loop on empty stack
-typedef S< DIV, U<1, 1>, TOP_STACK_PRIME  > POP;
+typedef S<PLOG, TWO, U<1, 1> > STACK_SIZE;
+typedef  S< NTH_PRIME, STACK_SIZE > TOP_STACK_PRIME; //
+typedef S<DIV, U<1, 1>, TWO> DEC_SIZE;
+typedef S<TIMES, U<1,1>, TWO> INC_SIZE;
+////typedef  S< PREV_PRIME, S< NTH_PRIME, STACK_SIZE> > TOP_STACK_PRIME; // infinite loop on empty stack
+typedef S< DEC_SIZE, S< DIV, U<1, 1>, TOP_STACK_PRIME > > POP;
 typedef S< PLOG,  TOP_STACK_PRIME, U<1, 1> >  ULT; //head, peek, last, ultimate
 typedef S< PLOG,  S<PREV_PRIME, TOP_STACK_PRIME>, U<1,1> > PENULT; // before head, penultimame
-typedef S<TIMES, U<2, 1>, S<POW, S< NTH_PRIME, S< STACK_SIZE, U<2, 1> > >, U<2, 2> > > PUSH;
-typedef S<NOT_DIVISIBLE, U<1,1>, THREE> ONLY_VALUE_OR_EMPTY;
+typedef S < S<TIMES, U<2, 1>, S<POW, S< TOP_STACK_PRIME, U<2, 1> > , U<2, 2> > >, S< INC_SIZE, U<2, 1> >, U<2, 2> > PUSH;
+typedef S<NOT_DIVISIBLE, U<1,1>, FIVE> ONLY_VALUE_OR_EMPTY;
 typedef ONE EMPTY_STACK;
 
 typedef S<PUSH, S<POP, POP>, S<INC, ULT>>ACKERMANN_FIRST;
@@ -258,17 +261,18 @@ int main() {
     nat stack = S<PUSH, S<PUSH, S<PUSH, EMPTY_STACK, THREE>, ZERO>, ONE >::apl((0ll));
 //    nat stack =S<PUSH, EMPTY_STACK, THREE>::apl((0ll));
     cout << stack << endl;
-    print < ULT > (stack);
+    print<STACK_SIZE>(stack);
+//    print < ULT > (stack);
     print < PENULT > (stack);
 //    stack = POP::apl(stack);
 //    cout << stack << endl;
 //    print < ULT > (stack);
 //    print < PENULT > (stack);
-    cout << "ackerman" << endl;
-    stack = ACKERMANN_FIRST::apl(stack);
-    cout << stack << endl;
-    print < ULT > (stack);
-    print < PENULT > (stack);
+//    cout << "ackerman" << endl;
+//    stack = ACKERMANN_FIRST::apl(stack);
+//    cout << stack << endl;
+//    print < ULT > (stack);
+//    print < PENULT > (stack);
 
 
 //    print<S<PREV_PRIME, TWO> >(0);
