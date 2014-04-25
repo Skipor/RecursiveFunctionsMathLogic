@@ -16,9 +16,6 @@
 using namespace std;
 typedef long long nat;
 typedef std::vector<nat> arguments;
-double eps = 0.0000000000001;
-
-
 
 
 struct Z {
@@ -311,10 +308,6 @@ typedef S<R<TWO, S< NEXT_PRIME, U<3, 3> > >, U<1, 1>, U<1,1> > NTH_PRIME;
 //typedef  S< DEC, M<S< DIVISIBLE, U<3,2>, S<POW, U<3,1>, U<3,3> > > > >   PLOG;
 
 
-
-
-
-
 //template <typename Condition, typename Then , typename Else>
 //struct IF : S < R< Then, Else>, U<n, 1>, U<n, 2> ..., S<NOT, Condition> > this if is not lasy - then branch always counting
 // Else n + 2 arguments, where args'[n + 1] = 1, args'[n + 2] = Then(args)
@@ -359,6 +352,7 @@ typedef S< ULT ,  S <S <N_ACKERMANN_ITERS, U<1, 1>, ITERATIONS>, STACK_FROM_PAIR
 
 
 int main() {
+    cout << sizeof(long double);
 //    cout << Z::apl(5) << endl;
 //    cout << N::apl(4) << endl;
 //    cout << U<4, 3>::apl(1, 2, 3, 4) << endl;
@@ -396,68 +390,13 @@ int main() {
 //    print<STACK_FROM_PAIR>(0, 0);
 
 
-    nat stack = N_ACKERMANN_ITERS::apl(STACK_FROM_PAIR::apl(3, 2), 118);
-    cout << stack << endl;
-    print<READY>(stack);
-
-    stack = STACK_FROM_PAIR::apl(2, 2);
-    cout << stack << endl;
-     stack = ACKERMANN_ITER::apl(stack);
-    cout << stack << endl;
+//    nat stack = N_ACKERMANN_ITERS::apl(STACK_FROM_PAIR::apl(3, 2), 117); // owerflow on 118 iteration
 
 
-    print<ITERATIONS>(STACK_FROM_PAIR::apl(3,1));
-    print<ACKERMANN>(3, 2);
-//    print<PLOG>(2, 64 * 33 * 3 * 5);
-//    print<PLOG> (3, 64);
-//    print<S< DIV, U<1, 1>, TOP_STACK_PRIME >>(108);
-////    print<TOP_STACK_PRIME>(1);
-//    nat stack = S<PUSH, S<PUSH, S<PUSH, EMPTY_STACK, THREE>, ZERO>, ONE >::apl((0ll));
-////    nat stack =S<PUSH, EMPTY_STACK, THREE>::apl((0ll));
-//    cout << stack << endl;
-//    print<STACK_SIZE>(stack);
-//    print < ULT > (stack);
-//    print < PENULT > (stack);
-////    cout << "pop" << endl;
-////    stack = POP::apl(stack);
-////    cout << stack << endl;
-////    cout << "pop" << endl;
-////    stack = POP::apl(stack);
-////    cout << stack << endl;
-////    print < ULT > (stack);
-////    print < PENULT > (stack);
-//    cout << "ackerman" << endl;
-////    stack = ACKERMANN_THIRD::apl(stack);
-//    cout << ACKERMANN_FIRST::apl(stack) << endl;
-//    stack = ACKERMANN_ITER::apl(stack);
-////    stack = S < R< U<1, 1>,  U<3, 1>  > ,U<1, 1> >::apl(stack);
-//    cout << stack << endl;
-//    print<STACK_SIZE>(stack);
-//    print < ULT > (stack);
-//    print < PENULT > (stack);
-//    cout << "pop" << endl;
-//        stack = POP::apl(stack);
-//    cout << stack << endl;
-//    print<STACK_SIZE>(stack);
-//    print < ULT > (stack);
-//    print < PENULT > (stack);
-//
-//
-////    print<S<PREV_PRIME, TWO> >(0);
-////    for(nat i = 0; i < 65; i++) {
-////        cout << i <<' ';
-//////        print<NEXT_PRIME>(i);
-////        print<NTH_PRIME>(i);
-////
-//////        print<PLOG>(2, i);
-////    }
-////    cout << "X  NTH_PRIME(X)" << endl;
-////
-////    for(nat i = 0; i < 15; i++) {
-////        cout << i <<' ';
-//////        print<NTH_PRIME>(i);
-////        print<PLOG>(2, i);
-////    }
+
+
+//    print<ITERATIONS>(STACK_FROM_PAIR::apl(3,1));
+    print<ACKERMANN>(2, 6);
     return 0;
 }
 
